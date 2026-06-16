@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+:root {
+  /* Earth Spectrum Palette */
+  --soil: #3A2E28;
+  --moss: #5B8C5A;
+  --clay: #C67B5C;
+  --sky: #7BA7BC;
+  --sand: #FAF7F2;
+  --bark: #F3EFE8;
+  --ember: #D95D39;
+  --ash: #8B8680;
+
+  --background: var(--sand);
+  --foreground: var(--soil);
+  --surface: var(--bark);
+  --muted: var(--ash);
+  --border: rgba(58, 46, 40, 0.1);
+  --ring: var(--clay);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --soil: #E8E0D5;
+    --moss: #7CB87B;
+    --clay: #D48B6E;
+    --sky: #9DC4D4;
+    --sand: #1A1817; /* Midnight */
+    --bark: #252220;
+    --ember: #E07151;
+    --ash: #A39D97;
+
+    --background: var(--sand);
+    --foreground: var(--soil);
+    --surface: var(--bark);
+    --muted: var(--ash);
+    --border: rgba(232, 224, 213, 0.1);
+    --ring: var(--clay);
+  }
+}
+
+[data-theme="light"] {
+  --soil: #3A2E28;
+  --moss: #5B8C5A;
+  --clay: #C67B5C;
+  --sky: #7BA7BC;
+  --sand: #FAF7F2;
+  --bark: #F3EFE8;
+  --ember: #D95D39;
+  --ash: #8B8680;
+
+  --background: var(--sand);
+  --foreground: var(--soil);
+  --surface: var(--bark);
+  --muted: var(--ash);
+  --border: rgba(58, 46, 40, 0.1);
+}
+
+[data-theme="dark"] {
+  --soil: #E8E0D5;
+  --moss: #7CB87B;
+  --clay: #D48B6E;
+  --sky: #9DC4D4;
+  --sand: #1A1817;
+  --bark: #252220;
+  --ember: #E07151;
+  --ash: #A39D97;
+
+  --background: var(--sand);
+  --foreground: var(--soil);
+  --surface: var(--bark);
+  --muted: var(--ash);
+  --border: rgba(232, 224, 213, 0.1);
+}
+
+@theme {
+  --color-soil: var(--soil);
+  --color-moss: var(--moss);
+  --color-clay: var(--clay);
+  --color-sky: var(--sky);
+  --color-sand: var(--sand);
+  --color-bark: var(--bark);
+  --color-ember: var(--ember);
+  --color-ash: var(--ash);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border-custom: var(--border);
+
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
+  --font-mono: var(--font-jetbrains-mono);
+  
+  --radius-custom-card: 16px;
+  --radius-custom-btn: 12px;
+  --radius-custom-input: 8px;
+}
+
+/* Base styles override */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card shadow — "Dappled Light" */
+.card-shadow {
+  box-shadow:
+    0 1px 2px rgba(58, 46, 40, 0.04),
+    0 4px 12px rgba(58, 46, 40, 0.04),
+    0 8px 24px rgba(58, 46, 40, 0.03);
+}
+
+.dark .card-shadow {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Elevated card — "Lifted" */
+.card-elevated-shadow {
+  box-shadow:
+    0 2px 4px rgba(58, 46, 40, 0.06),
+    0 8px 20px rgba(58, 46, 40, 0.06),
+    0 16px 40px rgba(58, 46, 40, 0.04);
+}
+
+.dark .card-elevated-shadow {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom utility classes */
+.frosted-glass {
+  background: rgba(243, 239, 232, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(58, 46, 40, 0.1);
+}
+
+.dark .frosted-glass {
+  background: rgba(37, 34, 32, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(232, 224, 213, 0.1);
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
