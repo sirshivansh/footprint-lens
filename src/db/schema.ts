@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, boolean, timestamp, text, integer, decimal, date, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, boolean, timestamp, text, integer, decimal, date, jsonb, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // ─── 1. CORE USER TABLES ───
@@ -57,7 +57,9 @@ export const dataSources = pgTable("data_sources", {
   credentialsRef: jsonb("credentials_ref"),
   lastSyncAt: timestamp("last_sync_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  index("data_sources_user_id_idx").on(table.userId),
+]);
 
 export const merchantCategories = pgTable("merchant_categories", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -83,7 +85,11 @@ export const transactions = pgTable("transactions", {
   userCorrected: boolean("user_corrected").default(false),
   rawData: jsonb("raw_data"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  index("transactions_user_id_idx").on(table.userId),
+  index("transactions_date_idx").on(table.transactionDate),
+  index("transactions_category_id_idx").on(table.categoryId),
+]);
 
 export const emissionFactors = pgTable("emission_factors", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -106,7 +112,9 @@ export const receiptScans = pgTable("receipt_scans", {
   status: varchar("status", { length: 20 }).default("processing"), // 'processing', 'completed', 'failed'
   rawOcrResult: jsonb("raw_ocr_result"),
   scannedAt: timestamp("scanned_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  index("receipt_scans_user_id_idx").on(table.userId),
+]);
 
 export const receiptItems = pgTable("receipt_items", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -120,7 +128,9 @@ export const receiptItems = pgTable("receipt_items", {
   suggestedSwap: varchar("suggested_swap", { length: 255 }),
   swapCo2eKg: decimal("swap_co2e_kg", { precision: 10, scale: 4 }),
   productData: jsonb("product_data"),
-});
+}, (table) => [
+  index("receipt_items_scan_id_idx").on(table.receiptScanId),
+]);
 
 export const carbonRecords = pgTable("carbon_records", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -135,7 +145,11 @@ export const carbonRecords = pgTable("carbon_records", {
   recordDate: date("record_date").notNull(),
   calculationDetails: jsonb("calculation_details"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  index("carbon_records_user_id_idx").on(table.userId),
+  index("carbon_records_date_idx").on(table.recordDate),
+  index("carbon_records_category_idx").on(table.category),
+]);
 
 // ─── 3. ACTION ENGINE TABLES ───
 
@@ -174,7 +188,10 @@ export const userActions = pgTable("user_actions", {
   completedAt: timestamp("completed_at", { withTimezone: true }),
   firstShownAt: timestamp("first_shown_at", { withTimezone: true }).defaultNow(),
   lastShownAt: timestamp("last_shown_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  index("user_actions_user_id_idx").on(table.userId),
+  index("user_actions_action_id_idx").on(table.actionId),
+]);
 
 // ─── 4. SOCIAL & COHORTS TABLES ───
 
@@ -197,7 +214,10 @@ export const cohortMembers = pgTable("cohort_members", {
   role: varchar("role", { length: 20 }).default("member"), // 'creator', 'member'
   joinedAt: timestamp("joined_at", { withTimezone: true }).defaultNow(),
   leftAt: timestamp("left_at", { withTimezone: true }),
-});
+}, (table) => [
+  index("cohort_members_cohort_id_idx").on(table.cohortId),
+  index("cohort_members_user_id_idx").on(table.userId),
+]);
 
 export const quests = pgTable("quests", {
   id: uuid("id").primaryKey().defaultRandom(),
