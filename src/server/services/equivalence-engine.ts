@@ -17,14 +17,14 @@ export function getEquivalences(co2eKg: number): EquivalenceDetail[] {
   // - 820 kg (0.82 tons) = 4.1 trees working all year (1 kg = 0.005 trees)
   // - 820 kg (0.82 tons) = 246 hours of hot shower (1 kg = 0.3 hours)
   // - 820 kg (0.82 tons) = 2050 miles driven (1 kg = 2.5 miles)
-  // - 820 kg (0.82 tons) = 63 beef burgers (1 kg = 0.0768 burgers)
+  // - 820 kg (0.82 tons) = 60.68 cheese blocks (1 kg = 0.074 blocks)
 
   const balloons = Math.round(co2eKg * 564.39);
   const arcticIce = Number((co2eKg * 0.032).toFixed(2));
   const trees = Number((co2eKg * 0.005).toFixed(2));
   const showerHours = Math.round(co2eKg * 0.3);
   const milesDriven = Math.round(co2eKg * 2.5);
-  const beefBurgers = Math.round(co2eKg * 0.0768);
+  const cheeseBlocks = Math.round(co2eKg * 0.074);
 
   return [
     {
@@ -54,9 +54,9 @@ export function getEquivalences(co2eKg: number): EquivalenceDetail[] {
       label: `${milesDriven.toLocaleString()} miles driven`,
     },
     {
-      type: "beef_burgers",
-      value: beefBurgers,
-      label: `${beefBurgers.toLocaleString()} beef burgers`,
+      type: "cheese_blocks",
+      value: cheeseBlocks,
+      label: `${cheeseBlocks.toLocaleString()} cheese blocks (1kg)`,
     },
   ];
 }

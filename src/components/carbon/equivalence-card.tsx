@@ -23,7 +23,7 @@ export function EquivalenceCard({ equivalence, index = 0, className }: Equivalen
     trees: "How many mature trees would need to work for an entire year to absorb this amount of carbon.",
     shower_hours: "The CO₂ equivalent of heating water for this many hours of hot showering.",
     miles_driven: "The distance you could drive in an average car producing the same carbon emissions.",
-    beef_burgers: "The number of quarter-pound beef burgers whose production emits this amount of CO₂.",
+    cheese_blocks: "The number of 1kg blocks of dairy cheese whose production emits this amount of CO₂.",
   };
 
   return (

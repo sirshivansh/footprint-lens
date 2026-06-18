@@ -13,14 +13,14 @@ describe("Equivalence Engine", () => {
     const trees = equivs.find((e) => e.type === "trees");
     const shower = equivs.find((e) => e.type === "shower_hours");
     const miles = equivs.find((e) => e.type === "miles_driven");
-    const burgers = equivs.find((e) => e.type === "beef_burgers");
+    const cheese = equivs.find((e) => e.type === "cheese_blocks");
 
     expect(balloons?.value).toBe(Math.round(100 * 564.39));
     expect(ice?.value).toBe(Number((100 * 0.032).toFixed(2)));
     expect(trees?.value).toBe(Number((100 * 0.005).toFixed(2)));
     expect(shower?.value).toBe(Math.round(100 * 0.3));
     expect(miles?.value).toBe(Math.round(100 * 2.5));
-    expect(burgers?.value).toBe(Math.round(100 * 0.0768));
+    expect(cheese?.value).toBe(Math.round(100 * 0.074));
   });
 
   it("should return a formatted primary equivalence string based on miles", () => {

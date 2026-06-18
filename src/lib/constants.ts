@@ -62,7 +62,7 @@ export const EQUIVALENCE_ICONS: Record<string, string> = {
   trees: "🌳",
   shower_hours: "🚿",
   miles_driven: "🚗",
-  beef_burgers: "🍔",
+  cheese_blocks: "🧀",
 } as const;
 
 // Carbon categories

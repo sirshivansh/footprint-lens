@@ -24,7 +24,7 @@ export interface CarbonSummary {
     treesWorkingYear: number;
     showerHours: number;
     milesDriven: number;
-    beefBurgers: number;
+    cheeseBlocks: number;
   };
   trend: {
     date: string;

@@ -225,7 +225,7 @@ export async function getCarbonSummary(
     treesWorkingYear: equivalencesList.find((e) => e.type === "trees")?.value || 0,
     showerHours: equivalencesList.find((e) => e.type === "shower_hours")?.value || 0,
     milesDriven: equivalencesList.find((e) => e.type === "miles_driven")?.value || 0,
-    beefBurgers: equivalencesList.find((e) => e.type === "beef_burgers")?.value || 0,
+    cheeseBlocks: equivalencesList.find((e) => e.type === "cheese_blocks")?.value || 0,
   };
 
   // Trend data: last 6 periods
