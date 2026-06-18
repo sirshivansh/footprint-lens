@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Camera, Compass, Users, TreePine, LogOut } from "lucide-react";
+import { Home, Camera, Compass, Users, TreePine, LogOut, BookOpen } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { signOut, useSession } from "next-auth/react";
 
@@ -11,6 +11,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  external?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -19,6 +20,7 @@ const navItems: NavItem[] = [
   { label: "Actions", href: "/actions", icon: Compass },
   { label: "Cohort", href: "/cohort", icon: Users },
   { label: "Impact", href: "/impact", icon: TreePine },
+  { label: "Docs", href: "/docs/index.html", icon: BookOpen, external: true },
 ];
 
 export function NavBar() {
@@ -31,10 +33,12 @@ export function NavBar() {
       <nav className="fixed bottom-0 left-0 right-0 z-40 h-16 border-t border-border-custom bg-surface/90 backdrop-blur-md md:hidden">
         <div className="flex h-full items-center justify-around">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+            const isActive = !item.external && (pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href)));
             const Icon = item.icon;
+            const Component = item.external ? "a" : Link;
+            const extraProps = item.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
             return (
-              <Link
+              <Component
                 key={item.href}
                 href={item.href}
                 className={cn(
@@ -43,10 +47,11 @@ export function NavBar() {
                     ? "text-clay dark:text-clay"
                     : "text-muted hover:text-soil dark:hover:text-soil"
                 )}
+                {...extraProps}
               >
                 <Icon className={cn("h-5 w-5", isActive && "stroke-[2.5]")} />
                 <span>{item.label}</span>
-              </Link>
+              </Component>
             );
           })}
         </div>
@@ -65,10 +70,12 @@ export function NavBar() {
           {/* Navigation Links */}
           <div className="flex flex-col gap-1.5">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+              const isActive = !item.external && (pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href)));
               const Icon = item.icon;
+              const Component = item.external ? "a" : Link;
+              const extraProps = item.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
               return (
-                <Link
+                <Component
                   key={item.href}
                   href={item.href}
                   className={cn(
@@ -77,10 +84,11 @@ export function NavBar() {
                       ? "bg-soil text-sand dark:bg-soil dark:text-sand"
                       : "text-muted hover:bg-soil/5 hover:text-soil dark:hover:bg-soil/10"
                   )}
+                  {...extraProps}
                 >
                   <Icon className="h-5 w-5" />
                   <span>{item.label}</span>
-                </Link>
+                </Component>
               );
             })}
           </div>
