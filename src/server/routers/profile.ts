@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { db } from "@/db";
-import { userProfiles, userPreferences, users } from "@/db/schema";
+import { userProfiles, userPreferences, users, transactions } from "@/db/schema";
 import { eq, and, ne } from "drizzle-orm";
 import { calculateProfileEstimate, seedUserTransactions } from "../services/carbon-engine";
 import { hashPassword } from "@/lib/auth";
@@ -108,6 +108,32 @@ export const profileRouter = router({
       };
     }),
 
+  connectBank: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+      await db
+        .update(userProfiles)
+        .set({
+          accuracyScore: 92,
+          updatedAt: new Date(),
+        })
+        .where(eq(userProfiles.userId, userId));
+      return { success: true };
+    }),
+
+  disconnectBank: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+      await db
+        .update(userProfiles)
+        .set({
+          accuracyScore: 78,
+          updatedAt: new Date(),
+        })
+        .where(eq(userProfiles.userId, userId));
+      return { success: true };
+    }),
+
   updatePreferences: protectedProcedure
     .input(
       z.object({
@@ -175,5 +201,66 @@ export const profileRouter = router({
         .where(eq(users.id, userId));
 
       return { success: true, email: input.email };
+    }),
+
+  togglePauseMode: protectedProcedure
+    .input(z.object({ paused: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      const [existingPref] = await db
+        .select()
+        .from(userPreferences)
+        .where(eq(userPreferences.userId, userId));
+
+      if (existingPref) {
+        await db
+          .update(userPreferences)
+          .set({ pauseMode: input.paused })
+          .where(eq(userPreferences.userId, userId));
+      } else {
+        await db.insert(userPreferences).values({
+          userId,
+          pauseMode: input.paused,
+        });
+      }
+      return { success: true };
+    }),
+
+  exportUserData: protectedProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+      const [profile] = await db
+        .select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, userId));
+
+      const [preferences] = await db
+        .select()
+        .from(userPreferences)
+        .where(eq(userPreferences.userId, userId));
+
+      const userTransactions = await db
+        .select()
+        .from(transactions)
+        .where(eq(transactions.userId, userId));
+
+      return {
+        exportedAt: new Date().toISOString(),
+        profile: profile || null,
+        preferences: preferences || null,
+        transactions: userTransactions.map(t => ({
+          merchantName: t.merchantName,
+          amount: t.amount,
+          currency: t.currency,
+          transactionDate: t.transactionDate,
+        })),
+      };
+    }),
+
+  deleteAccount: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const userId = ctx.session.user.id;
+      await db.delete(users).where(eq(users.id, userId));
+      return { success: true };
     }),
 });

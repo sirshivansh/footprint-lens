@@ -7,6 +7,10 @@ import { Card, CardHeader, CardTitle, CardContent, Button, Input, Skeleton } fro
 import { Users, Plus, UserPlus, Copy, LogOut, Info, ShieldAlert, Award, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { CohortCard } from "@/components/social/cohort-card";
+import { QuestProgress } from "@/components/social/quest-progress";
+import { ActivityFeed } from "@/components/social/activity-feed";
+import { Avatar } from "@/components/social/avatar";
 
 export default function CohortPage() {
   const utils = trpc.useUtils();
@@ -163,29 +167,37 @@ export default function CohortPage() {
           /* ACTIVE COHORT DISPLAY */
           <div className="flex flex-col gap-6 font-sans">
             {/* Cohort Card */}
-            <Card className="border border-border-custom bg-surface relative overflow-hidden shadow-md">
-              <div className="p-5 flex flex-col gap-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex flex-col text-left">
-                    <span className="text-[10px] text-muted font-bold tracking-widest uppercase">
-                      {cohortData.cohort.type.replace("_", " ")} Squad
-                    </span>
-                    <h3 className="font-serif text-2xl font-bold text-soil leading-tight">
-                      {cohortData.cohort.name}
-                    </h3>
-                  </div>
+            <CohortCard
+              cohort={{
+                name: cohortData.cohort.name,
+                type: cohortData.cohort.type,
+                memberCount: cohortData.members.length,
+                members: cohortData.members.map((m) => ({
+                  avatarColor: m.avatarColor,
+                  avatarShape: m.avatarShape,
+                  isYou: m.isSelf,
+                })),
+                createdAt: cohortData.cohort.createdAt ? new Date(cohortData.cohort.createdAt).toISOString() : new Date().toISOString(),
+              }}
+            />
 
+            {/* Squad Management Card */}
+            <Card className="border border-border-custom bg-surface shadow-sm">
+              <div className="p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold tracking-widest text-muted uppercase text-left">
+                    Squad Management
+                  </h4>
                   <Button
                     onClick={handleLeave}
                     variant="outline"
                     className="text-xs text-ember border-ember/20 hover:bg-ember/5 h-8 font-semibold flex items-center gap-1.5 px-3 rounded-full shrink-0"
                   >
                     <LogOut className="h-3.5 w-3.5" />
-                    Leave
+                    Leave Squad
                   </Button>
                 </div>
-
-                {/* Invite Code Bar */}
+                
                 <div className="rounded-custom-btn border border-border-custom/80 bg-background/50 p-3 flex items-center justify-between">
                   <div className="flex flex-col text-left">
                     <span className="text-[9px] text-muted font-extrabold uppercase tracking-wide">
@@ -207,52 +219,20 @@ export default function CohortPage() {
             </Card>
 
             {/* Quests Progress Card */}
-            {cohortData.activeQuests.map((quest) => {
-              const target = parseFloat(quest.targetCo2eKg || "500.00");
-              const current = parseFloat(quest.currentCo2eKg || "0.00");
-              const pct = Math.min(100, Math.round((current / target) * 100));
-
-              return (
-                <Card key={quest.id} className="border border-border-custom bg-surface shadow-md">
-                  <div className="p-5 flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">🏆</span>
-                        <div className="flex flex-col text-left">
-                          <h4 className="font-serif text-base font-bold text-soil">
-                            {quest.title}
-                          </h4>
-                          <span className="text-[9px] text-muted font-bold tracking-wide uppercase">
-                            Active Quest
-                          </span>
-                        </div>
-                      </div>
-                      <span className="text-xs font-mono font-black text-soil">
-                        {current.toFixed(1)} / {target.toFixed(0)} <span className="text-[10px] text-muted">kg</span>
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-muted leading-relaxed text-left">
-                      {quest.description}
-                    </p>
-
-                    {/* Progress bar */}
-                    <div className="flex flex-col gap-1.5 mt-1">
-                      <div className="w-full h-2 rounded-full bg-soil/5 dark:bg-soil/15 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-moss transition-all duration-500 ease-out"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[9px] font-extrabold text-muted uppercase">
-                        <span>Cohort goal progress</span>
-                        <span>{pct}% Completed</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+            {cohortData.activeQuests.map((quest) => (
+              <QuestProgress
+                key={quest.id}
+                quest={{
+                  title: quest.title,
+                  type: quest.questType,
+                  targetCo2eKg: parseFloat(quest.targetCo2eKg || "0"),
+                  currentCo2eKg: parseFloat(quest.currentCo2eKg || "0"),
+                  status: quest.status || "active",
+                  startDate: quest.startDate ? new Date(quest.startDate).toISOString() : new Date().toISOString(),
+                  endDate: quest.endDate ? new Date(quest.endDate).toISOString() : new Date().toISOString(),
+                }}
+              />
+            ))}
 
             {/* Members Section (Anonymous grid) */}
             <Card className="border border-border-custom bg-surface shadow-sm">
@@ -266,16 +246,18 @@ export default function CohortPage() {
                     <div
                       key={member.id}
                       className={cn(
-                        "flex flex-col items-center gap-1 p-2 rounded-custom-btn border transition-all min-w-[70px]",
+                        "flex flex-col items-center gap-1.5 p-3 rounded-custom-btn border transition-all min-w-[76px]",
                         member.isSelf
                           ? "border-clay/40 bg-clay/5"
                           : "border-border-custom/50 bg-background/20"
                       )}
                     >
-                      {/* Abstract Avatar Icon */}
-                      <div className="h-10 w-10 rounded-full bg-background border border-border-custom/80 flex items-center justify-center shadow-inner shrink-0">
-                        {renderShapeIcon(member.avatarShape, member.avatarColor, "h-4 w-4")}
-                      </div>
+                      <Avatar
+                        color={member.avatarColor}
+                        shape={member.avatarShape}
+                        size="md"
+                        isYou={member.isSelf}
+                      />
                       <span className="text-[10px] font-bold text-soil">
                         {member.isSelf ? "You" : member.role === "creator" ? "Host" : "Member"}
                       </span>
@@ -295,37 +277,16 @@ export default function CohortPage() {
                 <h4 className="text-xs font-bold tracking-widest text-muted uppercase text-left">
                   Cohort Cooperation Feed
                 </h4>
-
-                <div className="flex flex-col gap-3">
-                  {cohortData.activityFeed.map((feedItem: any) => {
-                    const timeAgo = new Date(feedItem.timestamp).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    });
-
-                    return (
-                      <div
-                        key={feedItem.id}
-                        className="flex items-center gap-3 p-2.5 rounded-custom-btn bg-background/30 border border-border-custom/30 text-left text-xs"
-                      >
-                        {/* Member avatar identifier */}
-                        <div className="h-7 w-7 rounded-full bg-background border border-border-custom/50 flex items-center justify-center shrink-0">
-                          {renderShapeIcon(feedItem.avatarShape, feedItem.avatarColor, "h-3 w-3")}
-                        </div>
-
-                        <div className="flex flex-col truncate w-full">
-                          <span className="font-semibold text-soil leading-relaxed truncate">
-                            {feedItem.text}
-                          </span>
-                          <span className="text-[9px] text-muted flex items-center gap-1 font-bold">
-                            <Calendar className="h-2.5 w-2.5" />
-                            {timeAgo}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <ActivityFeed
+                  items={cohortData.activityFeed.map((feedItem: any) => ({
+                    id: feedItem.id,
+                    description: feedItem.text,
+                    type: "action",
+                    timestamp: feedItem.timestamp ? new Date(feedItem.timestamp).toISOString() : new Date().toISOString(),
+                    avatarColor: feedItem.avatarColor,
+                    avatarShape: feedItem.avatarShape,
+                  }))}
+                />
               </div>
             </Card>
           </div>

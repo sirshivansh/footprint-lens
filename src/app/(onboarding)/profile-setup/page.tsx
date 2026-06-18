@@ -1,14 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { CardSwipe, OnboardingData } from "@/components/onboarding/card-swipe";
+import { OnboardingStep } from "@/components/onboarding/onboarding-step";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 import { Skeleton } from "@/components/ui";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
+  const { setStep } = useOnboardingStore();
   const mutation = trpc.profile.saveOnboarding.useMutation();
+
+  useEffect(() => {
+    setStep(1);
+  }, [setStep]);
 
   const handleComplete = async (data: OnboardingData) => {
     try {
@@ -28,8 +35,8 @@ export default function ProfileSetupPage() {
 
   if (mutation.isPending) {
     return (
-      <div className="flex flex-col items-center justify-center gap-6 text-center">
-        <Skeleton className="h-96 w-full max-w-md rounded-2xl" />
+      <div className="flex flex-col items-center justify-center gap-6 text-center py-12">
+        <Skeleton className="h-96 w-full max-w-md rounded-2xl animate-pulse" />
         <div className="flex flex-col gap-2">
           <span className="font-serif text-xl font-bold text-soil animate-pulse">
             Analyzing your carbon pulse...
@@ -43,8 +50,16 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <div className="py-4">
-      <CardSwipe onComplete={handleComplete} />
-    </div>
+    <OnboardingStep
+      step={2}
+      totalSteps={4}
+      showBack={true}
+      onBack={() => router.push("/welcome")}
+      onSkip={() => router.push("/")}
+    >
+      <div className="py-2">
+        <CardSwipe onComplete={handleComplete} />
+      </div>
+    </OnboardingStep>
   );
 }

@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc/client";
 import { Card, CardHeader, CardTitle, CardContent, Skeleton, Button } from "@/components/ui";
 import { Trees, Globe2, ShieldCheck, Heart, ArrowUpRight, Award, Compass } from "lucide-react";
 import { motion } from "framer-motion";
+import { CollectiveStats } from "@/components/impact/collective-stats";
+import { VerificationCard } from "@/components/impact/verification-card";
 
 export default function ImpactPage() {
   const { data: stats, isLoading } = trpc.carbon.getCollectiveImpact.useQuery();
@@ -37,28 +39,14 @@ export default function ImpactPage() {
         </div>
 
         {/* Collective Impact Dashboard Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 font-sans">
-          <Card className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left">
-            <span className="text-[10px] text-muted font-bold tracking-wider uppercase">Tons Reduced</span>
-            <span className="font-mono text-2xl font-black text-soil mt-1">{totalTons} t</span>
-            <span className="text-[9px] text-muted font-semibold mt-0.5">CO₂e cumulative</span>
-          </Card>
-          <Card className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left">
-            <span className="text-[10px] text-muted font-bold tracking-wider uppercase">Acres Protected</span>
-            <span className="font-mono text-2xl font-black text-soil mt-1">{stats?.acresProtected.toFixed(1)}</span>
-            <span className="text-[9px] text-muted font-semibold mt-0.5">Ecosystem acreage</span>
-          </Card>
-          <Card className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left">
-            <span className="text-[10px] text-muted font-bold tracking-wider uppercase">Fund Allocated</span>
-            <span className="font-mono text-2xl font-black text-soil mt-1">${stats?.fundsRaisedUsd.toLocaleString()}</span>
-            <span className="text-[9px] text-muted font-semibold mt-0.5">Conservation funds</span>
-          </Card>
-          <Card className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left">
-            <span className="text-[10px] text-muted font-bold tracking-wider uppercase">Active Cohorts</span>
-            <span className="font-mono text-2xl font-black text-soil mt-1">{stats?.activeUserCount}</span>
-            <span className="text-[9px] text-muted font-semibold mt-0.5">Members worldwide</span>
-          </Card>
-        </div>
+        <CollectiveStats
+          stats={[
+            { label: "CO₂e cumulative", value: parseFloat(totalTons), unit: "Tons Reduced", icon: "🌍" },
+            { label: "Ecosystem acreage", value: stats?.acresProtected || 0, unit: "Acres Protected", icon: "🌱" },
+            { label: "Conservation funds", value: stats?.fundsRaisedUsd || 0, unit: "Fund Allocated", icon: "💰" },
+            { label: "Members worldwide", value: stats?.activeUserCount || 0, unit: "Active Cohorts", icon: "👥" },
+          ]}
+        />
 
         {/* Interactive Living Forest Component */}
         <LivingForest />
@@ -104,59 +92,20 @@ export default function ImpactPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {stats?.projects.map((proj) => (
-              <Card
+            {stats?.projects.map((proj, idx) => (
+              <VerificationCard
                 key={proj.id}
-                className="border border-border-custom bg-surface overflow-hidden shadow-md flex flex-col justify-between"
-              >
-                {/* Project Image */}
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${proj.satelliteImageUrl})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 text-left">
-                    <span className="text-[9px] font-black text-sand bg-moss rounded-full px-2 py-0.5 uppercase tracking-wide">
-                      {proj.partner} Verified
-                    </span>
-                    <h4 className="font-serif text-base font-bold text-white leading-tight mt-1">
-                      {proj.projectName}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* Project Details */}
-                <div className="p-4 flex flex-col gap-3.5">
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex flex-col">
-                      <span className="text-[9px] text-muted font-bold uppercase">Carbon Offset</span>
-                      <span className="font-mono font-extrabold text-soil">
-                        {(proj.co2eOffsetKg / 1000).toFixed(1)} tons
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[9px] text-muted font-bold uppercase">Area Protected</span>
-                      <span className="font-mono font-extrabold text-soil">
-                        {proj.areaProtectedAcres} Acres
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-border-custom/30 pt-3 text-[10px] text-muted">
-                    <span className="font-mono">ID: {proj.certificateId}</span>
-                    <a
-                      href={proj.verificationUrl ?? undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-clay font-bold flex items-center gap-0.5 hover:underline cursor-pointer"
-                    >
-                      Registry Link
-                      <ArrowUpRight className="h-3 w-3 shrink-0" />
-                    </a>
-                  </div>
-                </div>
-              </Card>
+                index={idx}
+                project={{
+                  partner: proj.partner,
+                  projectName: proj.projectName,
+                  certificateId: proj.certificateId || undefined,
+                  verificationUrl: proj.verificationUrl || undefined,
+                  co2eOffsetKg: proj.co2eOffsetKg || undefined,
+                  areaProtectedAcres: proj.areaProtectedAcres || undefined,
+                  satelliteImageUrl: proj.satelliteImageUrl || undefined,
+                }}
+              />
             ))}
           </div>
         </div>

@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { trpc } from "@/lib/trpc/client";
 import { Card, CardHeader, CardTitle, CardContent, Button, Input, Skeleton } from "@/components/ui";
-import { User, Mail, Lock, ShieldCheck, Sun, Moon, Bell, Sparkles, Award } from "lucide-react";
+import { User, Mail, Lock, ShieldCheck, Sun, Moon, Bell, Sparkles, Award, Landmark } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { data: session, update: updateSession } = useSession();
   const utils = trpc.useUtils();
   const { data: profileData, isLoading } = trpc.profile.getProfile.useQuery();
@@ -169,6 +171,35 @@ export default function ProfilePage() {
             </div>
           </div>
         </Card>
+
+        {/* Manage Data Streams & Privacy */}
+        <div className="grid grid-cols-2 gap-3.5 font-sans">
+          <Card
+            onClick={() => router.push("/profile/data-sources")}
+            className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left hover:border-clay/40 transition-all cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2">
+              <Landmark className="h-4.5 w-4.5 text-clay" />
+              <span className="font-serif text-sm font-bold text-soil">Data Sources</span>
+            </div>
+            <span className="text-[10px] text-muted mt-1.5 leading-normal">
+              Manage synced bank accounts and receipt streams.
+            </span>
+          </Card>
+          
+          <Card
+            onClick={() => router.push("/profile/privacy")}
+            className="border border-border-custom bg-surface p-4 flex flex-col justify-between text-left hover:border-clay/40 transition-all cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4.5 w-4.5 text-moss" />
+              <span className="font-serif text-sm font-bold text-soil">Privacy Center</span>
+            </div>
+            <span className="text-[10px] text-muted mt-1.5 leading-normal">
+              Sovereign controls for pause, export, and erase.
+            </span>
+          </Card>
+        </div>
 
         {/* Anonymous Promo Form Card */}
         {isAnonymous && (

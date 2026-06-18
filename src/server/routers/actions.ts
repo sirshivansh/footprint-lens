@@ -177,6 +177,16 @@ export const actionsRouter = router({
       return { success: true };
     }),
 
+  getById: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const [action] = await db
+        .select()
+        .from(actions)
+        .where(eq(actions.id, input.id));
+      return action || null;
+    }),
+
   getTiers: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
 

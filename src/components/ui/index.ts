@@ -12,3 +12,6 @@ export { Skeleton } from "./skeleton";
 export type { SkeletonProps } from "./skeleton";
 export { Input } from "./input";
 export type { InputProps } from "./input";
+export { ToastContainer } from "./toast";
+export { Dialog } from "./dialog";
+export type { DialogProps } from "./dialog";

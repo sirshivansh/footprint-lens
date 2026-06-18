@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCProvider } from "@/lib/trpc/Provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { GlobalOverlays } from "@/components/providers/global-overlays";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,6 +44,7 @@ export default function RootLayout({
           <AuthProvider>
             <ThemeProvider>
               {children}
+              <GlobalOverlays />
             </ThemeProvider>
           </AuthProvider>
         </TRPCProvider>

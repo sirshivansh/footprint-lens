@@ -1,13 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
 import { Camera, HelpCircle } from "lucide-react";
+import { OnboardingStep } from "@/components/onboarding/onboarding-step";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 import { motion } from "framer-motion";
 
 export default function LensPreviewPage() {
   const router = useRouter();
+  const { setStep } = useOnboardingStore();
+
+  useEffect(() => {
+    setStep(3);
+  }, [setStep]);
 
   const handleNext = () => {
     // Complete onboarding, redirect to dashboard home
@@ -15,11 +22,19 @@ export default function LensPreviewPage() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    <OnboardingStep
+      step={4}
+      totalSteps={4}
+      showBack={true}
+      onBack={() => router.push("/accuracy")}
+      onSkip={handleNext}
+      skipLabel="Skip camera setup for now"
     >
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
       <Card className="p-8 border-border-custom bg-surface flex flex-col gap-6 shadow-md text-center items-center">
         <div className="flex flex-col gap-2 w-full">
           <span className="text-xs font-bold tracking-widest text-muted uppercase font-sans">
@@ -93,5 +108,6 @@ export default function LensPreviewPage() {
         </div>
       </Card>
     </motion.div>
+    </OnboardingStep>
   );
 }
