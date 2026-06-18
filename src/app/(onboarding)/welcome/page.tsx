@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { trpc } from "@/lib/trpc/client";
 import { Button, Card } from "@/components/ui";
 import { OnboardingStep } from "@/components/onboarding/onboarding-step";
 import { useOnboardingStore } from "@/stores/onboarding-store";
@@ -10,10 +11,28 @@ import { motion } from "framer-motion";
 export default function WelcomePage() {
   const router = useRouter();
   const { setStep } = useOnboardingStore();
+  const mutation = trpc.profile.saveOnboarding.useMutation();
 
   useEffect(() => {
     setStep(0);
   }, [setStep]);
+
+  const handleTryDemo = async () => {
+    try {
+      console.log("[DEMO] Seeding demo profile preferences...");
+      await mutation.mutateAsync({
+        homeType: "apartment",
+        primaryTransport: "transit",
+        dietType: "vegetarian", // Veg by default
+        flightFrequency: "1-3",
+        shoppingHabit: "average",
+      });
+      // Redirect straight to main dashboard
+      router.push("/");
+    } catch (error) {
+      console.error("[DEMO] Failed to generate demo profile:", error);
+    }
+  };
 
   return (
     <OnboardingStep
@@ -43,15 +62,28 @@ export default function WelcomePage() {
             </p>
           </div>
 
-          {/* Action Button */}
+          {/* Action Buttons */}
           <div className="flex flex-col gap-3">
             <Button
               size="lg"
               onClick={() => router.push("/profile-setup")}
+              disabled={mutation.isPending}
               className="w-full text-base font-bold tracking-wide"
             >
               GET STARTED →
             </Button>
+
+            <Button
+              size="lg"
+              variant="accent"
+              onClick={handleTryDemo}
+              isLoading={mutation.isPending}
+              disabled={mutation.isPending}
+              className="w-full text-base font-bold tracking-wide"
+            >
+              TRY DEMO (INSTANT PREVIEW) 🚀
+            </Button>
+
             <span className="text-xs text-muted font-sans font-semibold">
               No account registration required to start.
             </span>
