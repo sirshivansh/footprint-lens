@@ -147,7 +147,7 @@ export default function ProfilePage() {
               <div className="p-2.5 rounded-custom-btn bg-background/30 border border-border-custom/30">
                 <span className="text-[9px] text-muted font-bold uppercase">Diet Archetype</span>
                 <span className="block font-bold text-soil capitalize mt-0.5">
-                  {profileData?.profile?.dietType || "omnivore"}
+                  {profileData?.profile?.dietType || "vegetarian"}
                 </span>
               </div>
               <div className="p-2.5 rounded-custom-btn bg-background/30 border border-border-custom/30">

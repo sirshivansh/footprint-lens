@@ -78,11 +78,11 @@ export const seedActions = [
     isActive: true,
   },
   {
-    title: "Swap beef for chicken in tonight's meal",
-    description: "Swap beef mince or steak for chicken breast. Beef production creates massive methane emissions, emitting 6x more CO2e than poultry.",
-    impactDescription: "Avoids 5.0 kg CO2e in a single meal swap.",
+    title: "Swap dairy cheese for plant-based cheese",
+    description: "Swap dairy cheese with a plant-based cheese alternative. Dairy cattle farming is highly resource-intensive, emitting 4x more carbon than plant-based cheese.",
+    impactDescription: "Avoids 3.5 kg CO2e in a single food swap.",
     category: "diet",
-    estimatedCo2eReductionKg: "5.0000",
+    estimatedCo2eReductionKg: "3.5000",
     feasibilityScore: 80,
     tierLevel: 1,
     isActive: true,
@@ -130,12 +130,12 @@ export const seedActions = [
 
   // ─── TIER 2: HABIT BUILDERS ───
   {
-    title: "Establish Meatless Mondays",
-    description: "Commit to eating fully vegetarian or vegan every Monday. Over time, reducing meat consumption is the single most effective personal food lever.",
-    impactDescription: "Avoids ~15 kg CO2e per week, which equals ~780 kg CO2e avoided over a year.",
+    title: "Choose local seasonal produce",
+    description: "Buy fruits and vegetables that are locally grown and in season, avoiding the high carbon footprint of long-distance air freight and imports.",
+    impactDescription: "Reduces food transport emissions, saving ~4.0 kg CO2e per grocery trip.",
     category: "diet",
-    estimatedCo2eReductionKg: "15.0000",
-    feasibilityScore: 75,
+    estimatedCo2eReductionKg: "4.0000",
+    feasibilityScore: 85,
     tierLevel: 2,
     isActive: true,
   },

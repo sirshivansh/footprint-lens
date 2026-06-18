@@ -145,7 +145,7 @@ export async function getCarbonSummary(
     const profileData: OnboardingProfile = {
       homeType: (profile.homeType || "apartment") as any,
       primaryTransport: (profile.primaryTransport || "transit") as any,
-      dietType: (profile.dietType || "flexitarian") as any,
+      dietType: (profile.dietType || "vegetarian") as any,
       flightFrequency: (profile.flightFrequency || "1-3") as any,
       shoppingHabit: (profile.shoppingHabit || "average") as any,
     };
