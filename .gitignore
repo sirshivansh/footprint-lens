@@ -20,8 +20,6 @@ dist/
 
 # ─── Project Documentation (private, not for repo) ───
 docs/
-docs-site/
-scripts/
 AGENTS.md
 CLAUDE.md
 
