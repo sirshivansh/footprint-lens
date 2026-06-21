@@ -94,7 +94,7 @@ export async function getCurrentAction(userId: string) {
   const excludedIds = excludedUserActions.map((ua) => ua.actionId);
 
   // 4. Fetch all available actions in unlocked tiers
-  let actionsQuery = db
+  const actionsQuery = db
     .select({
       id: actions.id,
       title: actions.title,

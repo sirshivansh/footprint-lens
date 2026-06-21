@@ -21,6 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
     const initialTheme: Theme = savedTheme || (systemPrefersDark ? "dark" : "light");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme);
     setMounted(true);
 

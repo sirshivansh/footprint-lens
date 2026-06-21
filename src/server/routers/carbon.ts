@@ -31,7 +31,7 @@ export const carbonRouter = router({
       const offset = (input.page - 1) * input.perPage;
 
       // Build conditional where clause
-      let whereClause = eq(transactions.userId, userId);
+      const whereClause = eq(transactions.userId, userId);
       // Wait, if category is provided, we can join with carbonRecords to filter!
       // But let's keep it simple: fetch all transactions and carbonRecords.
       
