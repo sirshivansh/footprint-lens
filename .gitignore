@@ -18,8 +18,8 @@ dist/
 .env.production.local
 .env*.local
 
-# # ─── Project Documentation (private, not for repo) ───
-# docs/
+# ─── Project Documentation (private, not for repo) ───
+docs/
 
 # ─── Debug Logs ───
 npm-debug.log*
