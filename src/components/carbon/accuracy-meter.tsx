@@ -23,15 +23,23 @@ export function AccuracyMeter({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   
+  // 24 segments calculations
+  const totalSegments = 24;
+  const period = circumference / totalSegments;
+  // High-fidelity gap calculation for rounded caps
+  const gapLength = 4 + strokeWidth;
+  const segmentLength = Math.max(0.1, period - gapLength);
+
   // Motion values for spring counter
   const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
 
   useEffect(() => {
-    // Animate the text counter and visual stroke offset
+    // Animate the text counter and visual stroke offset with a spring curve
     const controls = animate(count, score, {
-      duration: 1.5,
-      ease: [0.16, 1, 0.3, 1], // ease-out-expo
+      type: "spring",
+      stiffness: 60,
+      damping: 15,
+      mass: 1,
       onUpdate: (latest) => setCurrentScore(Math.round(latest)),
     });
     return () => controls.stop();
@@ -47,37 +55,51 @@ export function AccuracyMeter({
     >
       {/* SVG Circular Path */}
       <svg className="absolute inset-0 -rotate-90" width={size} height={size}>
-        {/* Background track */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="transparent"
-          stroke="currentColor"
-          className="text-soil/10 dark:text-soil/20"
-          strokeWidth={strokeWidth}
-        />
-        {/* Active progress */}
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="transparent"
-          stroke="url(#accuracyGradient)"
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 0.1s ease-out" }}
-        />
-        
-        {/* Gradients */}
         <defs>
+          {/* Bezel mask for 24 segments */}
+          <mask id="accuracyMask">
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="transparent"
+              stroke="white"
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${segmentLength} ${gapLength}`}
+              strokeLinecap="round"
+            />
+          </mask>
           <linearGradient id="accuracyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="var(--clay)" />
             <stop offset="100%" stopColor="var(--moss)" />
           </linearGradient>
         </defs>
+
+        <g mask="url(#accuracyMask)">
+          {/* Background track (inactive segments) */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="transparent"
+            stroke="currentColor"
+            className="text-soil/10 dark:text-soil/20"
+            strokeWidth={strokeWidth}
+          />
+          {/* Active progress (colored segments) */}
+          <motion.circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="transparent"
+            stroke="url(#accuracyGradient)"
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            style={{ transition: "stroke-dashoffset 0.05s ease-out" }}
+          />
+        </g>
       </svg>
 
       {/* Centered value display */}

@@ -51,7 +51,7 @@ export function ManualEntryForm({ onSuccess }: ManualEntryFormProps) {
   };
 
   return (
-    <Card className="border-border-custom bg-surface shadow-md">
+    <Card className="gradient-glass-card">
       {!isOpen ? (
         <div className="p-4 flex items-center justify-between font-sans">
           <div className="flex flex-col">

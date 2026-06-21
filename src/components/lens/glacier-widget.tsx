@@ -6,9 +6,20 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import { motion } from "framer-motion";
 
 export function GlacierWidget() {
+  const droplets = React.useMemo(() => {
+    return Array.from({ length: 12 }).map((_, i) => {
+      const left = 25 + (i * 4.2) + (i % 2 === 0 ? 2 : -2); 
+      const size = 2 + (i % 3) * 0.8; 
+      const duration = 1.2 + (i % 4) * 0.4; 
+      const delay = -(i * 0.3) - (i % 3) * 0.1; 
+      const opacity = 0.25 + (i % 5) * 0.12; 
+      return { id: i, left, size, duration, delay, opacity };
+    });
+  }, []);
+
   return (
     <Link href="/lens" className="block focus:outline-none">
-      <Card className="border-border-custom bg-surface relative overflow-hidden shadow-md hover:border-clay/50 transition-all group">
+      <Card className="gradient-glass-card relative overflow-hidden group">
         <CardHeader className="pb-1">
           <CardTitle className="text-soil opacity-90 text-sm tracking-wide uppercase font-sans flex items-center justify-between">
             <span>🏔️ YOUR GLACIER</span>
@@ -31,35 +42,41 @@ export function GlacierWidget() {
               {/* Sky reflection or background glow */}
               <circle cx="100" cy="50" r="40" fill="rgba(123, 167, 188, 0.05)" />
 
-              {/* Glacier Peak Left (Low Poly) */}
-              <polygon
-                points="20,90 60,30 90,90"
-                fill="currentColor"
-                className="opacity-70 fill-[#9DC4D4] dark:fill-[#5F8A9B]"
-              />
-              {/* Glacier Peak Center */}
-              <polygon
-                points="60,90 110,20 160,90"
-                fill="currentColor"
-                className="fill-[#BDE0EC] dark:fill-[#7BA7BC]"
-              />
-              {/* Glacier Peak Right */}
-              <polygon
-                points="130,90 170,45 190,90"
-                fill="currentColor"
-                className="opacity-80 fill-[#ACD5E3] dark:fill-[#6A96A8]"
-              />
+              {/* Voxel Glacier Peak Left */}
+              <g transform="translate(10, 10)">
+                <polygon points="30,50 10,60 10,80 30,70" fill="#9DC4D4" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="30,50 50,60 50,80 30,70" fill="#7BA7BC" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="30,50 10,40 30,30 50,40" fill="#BDE0EC" stroke="#2C2640" strokeWidth="1.5" />
+              </g>
 
-              {/* Facet highlights for ice depth */}
-              <polygon points="110,20 110,90 160,90" fill="rgba(255,255,255,0.25)" />
-              <polygon points="60,30 60,90 90,90" fill="rgba(255,255,255,0.15)" />
+              {/* Voxel Glacier Peak Center */}
+              <g transform="translate(65, -15)">
+                <polygon points="35,60 5,75 5,105 35,90" fill="#BDE0EC" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="35,60 65,75 65,105 35,90" fill="#7BA7BC" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="35,60 5,45 35,30 65,45" fill="#FFFFFF" stroke="#2C2640" strokeWidth="1.5" />
+              </g>
+
+              {/* Voxel Glacier Peak Right */}
+              <g transform="translate(130, 20)">
+                <polygon points="20,40 5,48 5,70 20,62" fill="#ACD5E3" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="20,40 35,48 35,70 20,62" fill="#6A96A8" stroke="#2C2640" strokeWidth="1.5" />
+                <polygon points="20,40 5,32 20,24 35,32" fill="#BDE0EC" stroke="#2C2640" strokeWidth="1.5" />
+              </g>
 
               {/* Water Line */}
-              <line x1="10" y1="90" x2="190" y2="90" stroke="currentColor" className="text-sky/60" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="10" y1="90" x2="190" y2="90" stroke="#2C2640" strokeWidth="3" strokeLinecap="round" />
               
-              {/* Icebergs floating */}
-              <polygon points="40,90 45,85 55,90" fill="currentColor" className="text-sky/90" />
-              <polygon points="150,90 158,83 165,90" fill="currentColor" className="text-sky/90" />
+              {/* Voxel Icebergs floating */}
+              <g transform="translate(42, 83)">
+                <polygon points="5,7 0,10 5,13 10,10" fill="#BDE0EC" stroke="#2C2640" strokeWidth="1" />
+                <polygon points="5,7 0,10 0,12 5,9" fill="#9DC4D4" stroke="#2C2640" strokeWidth="1" />
+                <polygon points="5,7 10,10 10,12 5,9" fill="#7BA7BC" stroke="#2C2640" strokeWidth="1" />
+              </g>
+              <g transform="translate(150, 81)">
+                <polygon points="6,6 0,10 6,14 12,10" fill="#BDE0EC" stroke="#2C2640" strokeWidth="1" />
+                <polygon points="6,6 0,10 0,12 6,8" fill="#9DC4D4" stroke="#2C2640" strokeWidth="1" />
+                <polygon points="6,6 12,10 12,12 6,8" fill="#7BA7BC" stroke="#2C2640" strokeWidth="1" />
+              </g>
 
               {/* SVG-based water ripple lines */}
               <path
@@ -72,55 +89,23 @@ export function GlacierWidget() {
               />
             </svg>
 
-            {/* Melting Droplets Particles (Framer Motion) */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* Drop 1 */}
-              <motion.div
-                animate={{
-                  y: [40, 80],
-                  opacity: [0, 1, 0],
-                  scale: [1, 1, 0.5],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 2.2,
-                  ease: "easeIn",
-                  delay: 0.2,
-                }}
-                className="absolute left-[45%] top-1/4 h-2 w-1 bg-sky rounded-full"
-              />
-
-              {/* Drop 2 */}
-              <motion.div
-                animate={{
-                  y: [30, 75],
-                  opacity: [0, 1, 0],
-                  scale: [1, 1, 0.5],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 2.6,
-                  ease: "easeIn",
-                  delay: 1.1,
-                }}
-                className="absolute left-[55%] top-1/4 h-2.5 w-1.5 bg-sky/80 rounded-full"
-              />
-
-              {/* Drop 3 */}
-              <motion.div
-                animate={{
-                  y: [45, 82],
-                  opacity: [0, 1, 0],
-                  scale: [1, 1, 0.5],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.8,
-                  ease: "easeIn",
-                  delay: 0.7,
-                }}
-                className="absolute left-[38%] top-1/4 h-1.5 w-1 bg-sky/70 rounded-full"
-              />
+            {/* Melting Droplets Particles (Dark Sky Particle Opacity Layering) */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {droplets.map((drop) => (
+                <div
+                  key={drop.id}
+                  className="absolute bg-sky/80 rounded-full animate-particle-fall"
+                  style={{
+                    left: `${drop.left}%`,
+                    top: "35%",
+                    width: `${Math.max(1, drop.size * 0.5)}px`,
+                    height: `${drop.size}px`,
+                    "--op": drop.opacity,
+                    "--dur": `${drop.duration}s`,
+                    "--delay": `${drop.delay}s`,
+                  } as React.CSSProperties}
+                />
+              ))}
             </div>
           </div>
 

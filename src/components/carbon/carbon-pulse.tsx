@@ -39,7 +39,7 @@ export function CarbonPulse() {
   const prevPercent = (data.previousPeriodCo2eKg / maxVal) * 100;
 
   return (
-    <Card className="flex flex-col justify-between border-border-custom bg-surface relative overflow-hidden shadow-md">
+    <Card className="flex flex-col justify-between gradient-glass-card relative overflow-hidden">
       {/* Decorative background pulse */}
       <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-clay/5 blur-xl animate-pulse" />
 

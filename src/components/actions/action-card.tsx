@@ -6,6 +6,7 @@ import { Card, CardContent, Button, Skeleton } from "@/components/ui";
 import { Sparkles, X, ChevronRight, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { ThingsCheckbox } from "./things-checkbox";
 
 export function ActionCard() {
   const utils = trpc.useUtils();
@@ -131,17 +132,24 @@ export function ActionCard() {
               )}
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3 pt-2">
-                <Button
-                  onClick={handleComplete}
-                  isLoading={completeMutation.isPending}
-                  variant="accent"
-                  className="w-full font-bold shadow-sm"
-                >
-                  I DID THIS ✓
-                </Button>
+              <div className="flex flex-col gap-4 pt-2">
+                {/* Things 3 Interactive Glass Checkbox Row */}
+                <div className="flex items-center justify-between p-4 rounded-custom-btn border border-moss/20 bg-moss/5 dark:bg-moss/10">
+                  <div className="flex flex-col text-left">
+                    <span className="font-bold text-sm text-soil">Mark as Completed</span>
+                    <span className="text-[10px] text-muted font-bold uppercase tracking-wider mt-0.5">
+                      Earn +{action.estimatedCo2eReductionKg.toFixed(0)} kg credits
+                    </span>
+                  </div>
+                  <ThingsCheckbox
+                    checked={completeMutation.isPending}
+                    disabled={completeMutation.isPending}
+                    onChange={handleComplete}
+                    size={32}
+                  />
+                </div>
 
-                <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted">
+                <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted pt-1">
                   <button
                     onClick={handleDismiss}
                     className="hover:text-soil transition-colors cursor-pointer"

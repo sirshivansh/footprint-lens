@@ -1,76 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  /* Earth Spectrum Palette */
-  --soil: #3A2E28;
-  --moss: #5B8C5A;
-  --clay: #C67B5C;
-  --sky: #7BA7BC;
-  --sand: #FAF7F2;
-  --bark: #F3EFE8;
-  --ember: #D95D39;
-  --ash: #8B8680;
+  /* Colorful Voxel Palette */
+  --soil: #2C2640;      /* Deep Indigo */
+  --moss: #3ED075;      /* Vibrant Mint Leaf */
+  --clay: #FF6B53;      /* Saturated Warm Coral */
+  --sky: #3B9CFF;       /* Bright Sky Blue */
+  --sand: #FFF6ED;      /* Soft Warm Cream-Peach */
+  --bark: #FFFFFF;      /* Solid White Card Surface */
+  --ember: #FF3E6C;     /* Punchy Rose Red */
+  --ash: #877E99;       /* Muted Slate Purple */
 
   --background: var(--sand);
   --foreground: var(--soil);
   --surface: var(--bark);
   --muted: var(--ash);
-  --border: rgba(58, 46, 40, 0.1);
+  --border: var(--soil);
   --ring: var(--clay);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --soil: #E8E0D5;
-    --moss: #7CB87B;
-    --clay: #D48B6E;
-    --sky: #9DC4D4;
-    --sand: #1A1817; /* Midnight */
-    --bark: #252220;
-    --ember: #E07151;
-    --ash: #A39D97;
+    --soil: #FAF6F0;    /* Soft Warm Cream */
+    --moss: #4EE088;    /* Glowing Mint Green */
+    --clay: #FF8470;    /* Pastel Coral */
+    --sky: #5EB1FF;     /* Glowing Sky Blue */
+    --sand: #19172B;    /* Deep Amethyst-Midnight */
+    --bark: #25223A;    /* Dark Amethyst Surface */
+    --ember: #FF668B;   /* Soft Rose Alert */
+    --ash: #A59DB5;     /* Muted Lavender Grey */
 
     --background: var(--sand);
     --foreground: var(--soil);
     --surface: var(--bark);
     --muted: var(--ash);
-    --border: rgba(232, 224, 213, 0.1);
+    --border: var(--soil);
     --ring: var(--clay);
   }
 }
 
 [data-theme="light"] {
-  --soil: #3A2E28;
-  --moss: #5B8C5A;
-  --clay: #C67B5C;
-  --sky: #7BA7BC;
-  --sand: #FAF7F2;
-  --bark: #F3EFE8;
-  --ember: #D95D39;
-  --ash: #8B8680;
+  --soil: #2C2640;
+  --moss: #3ED075;
+  --clay: #FF6B53;
+  --sky: #3B9CFF;
+  --sand: #FFF6ED;
+  --bark: #FFFFFF;
+  --ember: #FF3E6C;
+  --ash: #877E99;
 
   --background: var(--sand);
   --foreground: var(--soil);
   --surface: var(--bark);
   --muted: var(--ash);
-  --border: rgba(58, 46, 40, 0.1);
+  --border: var(--soil);
 }
 
 [data-theme="dark"] {
-  --soil: #E8E0D5;
-  --moss: #7CB87B;
-  --clay: #D48B6E;
-  --sky: #9DC4D4;
-  --sand: #1A1817;
-  --bark: #252220;
-  --ember: #E07151;
-  --ash: #A39D97;
+  --soil: #FAF6F0;
+  --moss: #4EE088;
+  --clay: #FF8470;
+  --sky: #5EB1FF;
+  --sand: #19172B;
+  --bark: #25223A;
+  --ember: #FF668B;
+  --ash: #A59DB5;
 
   --background: var(--sand);
   --foreground: var(--soil);
   --surface: var(--bark);
   --muted: var(--ash);
-  --border: rgba(232, 224, 213, 0.1);
+  --border: var(--soil);
 }
 
 @theme {
@@ -90,12 +90,12 @@
   --color-border-custom: var(--border);
 
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-fraunces);
+  --font-serif: var(--font-outfit); /* Outfit for bold geometric voxel headers */
   --font-mono: var(--font-jetbrains-mono);
   
-  --radius-custom-card: 16px;
-  --radius-custom-btn: 12px;
-  --radius-custom-input: 8px;
+  --radius-custom-card: 6px;
+  --radius-custom-btn: 6px;
+  --radius-custom-input: 4px;
 }
 
 /* Base styles override */
@@ -105,34 +105,26 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Card shadow — "Dappled Light" */
+/* Voxel Flat 3D Blocky Shadows */
 .card-shadow {
-  box-shadow:
-    0 1px 2px rgba(58, 46, 40, 0.04),
-    0 4px 12px rgba(58, 46, 40, 0.04),
-    0 8px 24px rgba(58, 46, 40, 0.03);
+  border: 3px solid var(--soil);
+  box-shadow: 4px 4px 0px 0px var(--soil);
 }
 
 .dark .card-shadow {
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--soil);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.4);
 }
 
-/* Elevated card — "Lifted" */
+/* Elevated card — Voxel Flat 3D Offsets */
 .card-elevated-shadow {
-  box-shadow:
-    0 2px 4px rgba(58, 46, 40, 0.06),
-    0 8px 20px rgba(58, 46, 40, 0.06),
-    0 16px 40px rgba(58, 46, 40, 0.04);
+  border: 3px solid var(--soil);
+  box-shadow: 7px 7px 0px 0px var(--soil);
 }
 
 .dark .card-elevated-shadow {
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 20px rgba(0, 0, 0, 0.3),
-    0 16px 40px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--soil);
+  box-shadow: 7px 7px 0px 0px rgba(0, 0, 0, 0.45);
 }
 
 /* Custom utility classes */
@@ -157,4 +149,136 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* Premium Glassmorphic Cards (Stripe / Apple Health 2024) */
+.gradient-glass-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(250, 247, 252, 0.4) 0%, rgba(243, 239, 232, 0.85) 35%, var(--bark) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(58, 46, 40, 0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .gradient-glass-card {
+  background: linear-gradient(135deg, rgba(26, 24, 23, 0.4) 0%, rgba(37, 34, 32, 0.85) 35%, var(--bark) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(232, 224, 213, 0.08);
+}
+
+.gradient-glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.02));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dark .gradient-glass-card::before {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+}
+
+.gradient-glass-card:hover {
+  border-color: rgba(198, 123, 92, 0.35); /* clay accent border on hover */
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(58, 46, 40, 0.04),
+    0 12px 32px rgba(58, 46, 40, 0.06);
+}
+
+.dark .gradient-glass-card:hover {
+  border-color: rgba(212, 139, 110, 0.35);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Dark Sky Precipitation Particle Animations */
+@keyframes particle-fall {
+  0% {
+    transform: translateY(-10px) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--op);
+  }
+  85% {
+    opacity: var(--op);
+  }
+  100% {
+    transform: translateY(75px) scale(0.4);
+    opacity: 0;
+  }
+}
+
+.animate-particle-fall {
+  animation: particle-fall var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+
+/* Forest Pollen Drifting Animation */
+@keyframes pollen-float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--op);
+  }
+  90% {
+    opacity: var(--op);
+  }
+  100% {
+    transform: translateY(-35px) translateX(12px);
+    opacity: 0;
+  }
+}
+
+.animate-pollen {
+  animation: pollen-float var(--dur) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+/* Forest Falling Leaves Animation */
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(-10px) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--op);
+  }
+  85% {
+    opacity: var(--op);
+  }
+  100% {
+    transform: translateY(60px) translateX(-15px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.animate-leaf-fall {
+  animation: leaf-fall var(--dur) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+/* Things 3 Checkbox Animations */
+@keyframes checkmark-sweep {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(100% at 50% 50%);
+  }
+}
+
+.animate-sweep {
+  animation: checkmark-sweep 120ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

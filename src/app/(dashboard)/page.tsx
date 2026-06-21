@@ -58,7 +58,7 @@ export default function DashboardPage() {
           <ManualEntryForm onSuccess={handleTxLogged} />
 
           {/* Recent Transactions Card */}
-          <Card className="border-border-custom bg-surface shadow-md">
+          <Card className="gradient-glass-card">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
               <CardTitle className="text-soil opacity-90 text-sm tracking-wide uppercase font-sans">
                 Recent Ledger

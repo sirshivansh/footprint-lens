@@ -42,7 +42,7 @@ export function CategoryBreakdown() {
   };
 
   return (
-    <Card className="border-border-custom bg-surface shadow-md">
+    <Card className="gradient-glass-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-soil opacity-90 text-sm tracking-wide uppercase font-sans">
           Emissions Breakdown

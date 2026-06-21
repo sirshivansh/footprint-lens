@@ -76,12 +76,12 @@ export default function LensPage() {
       desc: "Equivalent emissions to driving an average passenger gasoline car. This matches fuel combustion and typical tailpipe emissions.",
     },
     {
-      id: "burgers",
-      emoji: "🍔",
-      title: "Beef Burgers",
-      value: summary?.equivalences.beefBurgers || 0,
-      unit: "",
-      desc: "Equivalent agricultural carbon footprint of beef burgers. Beef production releases methane and requires massive supply chains.",
+      id: "cheeseBlocks",
+      emoji: "🧀",
+      title: "Cheese Blocks",
+      value: summary?.equivalences.cheeseBlocks || 0,
+      unit: "blocks (1kg)",
+      desc: "Equivalent carbon footprint of dairy cheese production. Dairy farming is a significant greenhouse gas contributor.",
     },
   ];
 

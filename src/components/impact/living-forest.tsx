@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { Card, CardContent, Skeleton } from "@/components/ui";
 import { Trees, Info, ShieldAlert, Award } from "lucide-react";
@@ -23,6 +23,40 @@ export function LivingForest() {
   const { data: profileData } = trpc.profile.getProfile.useQuery();
   const [hoveredTree, setHoveredTree] = useState<Tree | null>(null);
 
+  // Tick timer to reactively update growth stages for new trees in real-time
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const pollenParticles = React.useMemo(() => {
+    return Array.from({ length: 15 }).map((_, i) => {
+      const left = Math.random() * 100;
+      const top = 30 + Math.random() * 50;
+      const size = 2 + (i % 3) * 1.2; 
+      const duration = 6 + (i % 4) * 2; 
+      const delay = -(i * 0.7);
+      const opacity = 0.2 + (i % 3) * 0.15; 
+      return { id: i, left, top, size, duration, delay, opacity };
+    });
+  }, []);
+
+  const leafParticles = React.useMemo(() => {
+    return Array.from({ length: 8 }).map((_, i) => {
+      const left = Math.random() * 95;
+      const size = 5 + (i % 3) * 2.5; 
+      const duration = 7 + (i % 3) * 3; 
+      const delay = -(i * 1.5);
+      const opacity = 0.25 + (i % 2) * 0.25; 
+      const colors = ["#7CB87B", "#C67B5C", "#E07151", "#FFB7B2"];
+      const color = colors[i % colors.length];
+      return { id: i, left, size, duration, delay, opacity, color };
+    });
+  }, []);
+
   if (isLoading) {
     return <Skeleton className="h-[400px] w-full rounded-custom-card animate-pulse" />;
   }
@@ -33,69 +67,165 @@ export function LivingForest() {
     : 0;
   const progressToNextTree = Math.round(totalSaved % 100);
 
-  // Render tree SVG based on species
-  const renderTreeSVG = (species: string, isMilestone: boolean) => {
+  // Growth Stage Logic:
+  // Stage 0: Seedling, Stage 1: Sprout, Stage 2: Sapling, Stage 3: Fully Grown, Stage 4: Flowering
+  const getGrowthStage = (plantedAt: Date | string | null, isMilestone: boolean, id: string) => {
+    if (!plantedAt) return 3; // default to fully grown if no date
+    const plantedTime = new Date(plantedAt).getTime();
+    const now = new Date().getTime();
+    const elapsedSec = (now - plantedTime) / 1000;
+
+    // Real-time growth within 3 minutes of planting
+    if (elapsedSec < 30) {
+      return 0; // Seedling
+    } else if (elapsedSec < 60) {
+      return 1; // Sprout
+    } else if (elapsedSec < 120) {
+      return 2; // Sapling
+    } else if (elapsedSec < 180) {
+      return 3; // Fully Grown
+    }
+
+    if (isMilestone) {
+      return 4; // Milestone trees are always flowering
+    }
+
+    // Older trees get deterministic stages to add visual variety
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      hash += id.charCodeAt(i);
+    }
+    const mod = hash % 10;
+    if (mod < 6) return 3; // 60% Fully Grown
+    if (mod < 8) return 4; // 20% Flowering/Mature
+    return 2; // 20% Sapling
+  };
+
+  // Render tree SVG based on species & growth stage
+  const renderTreeSVG = (species: string, isMilestone: boolean, stage: number) => {
     const scale = isMilestone ? 1.25 : 1.0;
     
+    // Stage 0: Seedling (Shared design)
+    if (stage === 0) {
+      return (
+        <g transform={`scale(${scale})`}>
+          <rect x="-1" y="2" width="2" height="1.5" fill="#654321" stroke="#2C2640" strokeWidth="0.8" />
+          <rect x="0.5" y="-1.5" width="1.2" height="2" fill="#7CB87B" stroke="#2C2640" strokeWidth="0.8" />
+        </g>
+      );
+    }
+    
+    // Stage 1: Sprout (Shared design)
+    if (stage === 1) {
+      return (
+        <g transform={`scale(${scale})`}>
+          <rect x="-0.5" y="0" width="1" height="4" fill="#7CB87B" stroke="#2C2640" strokeWidth="0.8" />
+          <rect x="-2.5" y="-2" width="2" height="1.5" fill="#699D4B" stroke="#2C2640" strokeWidth="0.8" />
+          <rect x="0.5" y="-3.5" width="2" height="1.5" fill="#84C362" stroke="#2C2640" strokeWidth="0.8" />
+        </g>
+      );
+    }
+
+    // Stage 2: Sapling (Shared design)
+    if (stage === 2) {
+      return (
+        <g transform={`scale(${scale})`}>
+          <rect x="-0.8" y="0" width="1.6" height="8" fill="#5C4033" stroke="#2C2640" strokeWidth="0.8" />
+          <rect x="-4.8" y="-4.5" width="9.6" height="5" fill="#5B8C5A" stroke="#2C2640" strokeWidth="0.8" />
+        </g>
+      );
+    }
+
+    // Stage 3 (Fully Grown) & Stage 4 (Flowering / Mature)
     switch (species.toLowerCase()) {
       case "birch": // transport
         return (
           <g transform={`scale(${scale})`}>
             {/* Trunk */}
-            <rect x="-1.5" y="0" width="3" height="18" fill="#EAE6DF" rx="0.5" stroke="#4A4A4A" strokeWidth="0.25" />
-            {/* Birch black notch lines */}
-            <line x1="-1.5" y1="4" x2="0.5" y2="4.5" stroke="#333" strokeWidth="0.3" />
-            <line x1="-0.5" y1="9" x2="1.5" y2="9.5" stroke="#333" strokeWidth="0.3" />
-            {/* Canopy */}
-            <ellipse cx="0" cy="-6" rx="8" ry="11" fill="#78B159" opacity="0.9" />
-            <ellipse cx="-4" cy="-5" rx="5" ry="7" fill="#699D4B" opacity="0.95" />
-            <ellipse cx="3" cy="-7" rx="5" ry="7" fill="#84C362" opacity="0.85" />
+            <rect x="-1.5" y="0" width="3" height="18" fill="#FAF6F0" stroke="#2C2640" strokeWidth="1" />
+            <line x1="-1.5" y1="5" x2="0" y2="5" stroke="#2C2640" strokeWidth="1" />
+            <line x1="0" y1="10" x2="1.5" y2="10" stroke="#2C2640" strokeWidth="1" />
+            {/* Stepped Voxel Canopy */}
+            <rect x="-7" y="-10" width="14" height="8" fill="#78B159" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-4" y="-16" width="8" height="6" fill="#84C362" stroke="#2C2640" strokeWidth="1" />
+            {/* Stage 4: Birch yellow tassels (blocks) */}
+            {stage === 4 && (
+              <>
+                <rect x="-6" y="-7" width="2" height="2" fill="#FAD02C" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="4" y="-5" width="2" height="2" fill="#FAD02C" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="-2" y="-14" width="2" height="2" fill="#FAD02C" stroke="#2C2640" strokeWidth="0.5" />
+              </>
+            )}
           </g>
         );
       case "pine": // energy
         return (
           <g transform={`scale(${scale})`}>
-            {/* Trunk */}
-            <rect x="-2" y="0" width="4" height="14" fill="#5C4033" rx="0.5" />
-            {/* Needles (triangles) */}
-            <polygon points="0,-18 -10,-6 10,-6" fill="#1E4620" />
-            <polygon points="0,-12 -8,-1 8,-1" fill="#2E5A30" />
-            <polygon points="0,-6 -6,4 6,4" fill="#3D7040" />
+            <rect x="-2" y="0" width="4" height="12" fill="#5C4033" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-10" y="-4" width="20" height="4" fill="#1E4620" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-8" y="-8" width="16" height="4" fill="#2E5A30" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-6" y="-12" width="12" height="4" fill="#3D7040" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-3" y="-16" width="6" height="4" fill="#4C8A50" stroke="#2C2640" strokeWidth="1" />
+            {/* Stage 4: Pinecones */}
+            {stage === 4 && (
+              <>
+                <rect x="-7" y="-2" width="2" height="2.5" fill="#4E3629" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="5" y="-2" width="2" height="2.5" fill="#4E3629" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="-4" y="-10" width="2" height="2.5" fill="#4E3629" stroke="#2C2640" strokeWidth="0.5" />
+              </>
+            )}
           </g>
         );
       case "spruce": // shopping
         return (
           <g transform={`scale(${scale})`}>
-            {/* Trunk */}
-            <rect x="-1.5" y="0" width="3" height="12" fill="#4A3B32" />
-            {/* Layers */}
-            <polygon points="0,-16 -8,-7 8,-7" fill="#2D4D43" />
-            <polygon points="0,-10 -7,-2 7,-2" fill="#385F53" />
-            <polygon points="0,-4 -6,4 6,4" fill="#447365" />
+            <rect x="-1.5" y="0" width="3" height="11" fill="#4A3B32" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-9" y="-3" width="18" height="3" fill="#2D4D43" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-7" y="-7" width="14" height="4" fill="#385F53" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-5" y="-11" width="10" height="4" fill="#447365" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-2" y="-14" width="4" height="3" fill="#508777" stroke="#2C2640" strokeWidth="1" />
+            {/* Stage 4: Snow-dusted tops */}
+            {stage === 4 && (
+              <>
+                <rect x="-4" y="-14" width="8" height="1.5" fill="#FAF6F0" />
+                <rect x="-2" y="-15.5" width="4" height="1.5" fill="#FAF6F0" />
+              </>
+            )}
           </g>
         );
       case "cedar": // other
         return (
           <g transform={`scale(${scale})`}>
-            {/* Trunk */}
-            <rect x="-2.5" y="0" width="5" height="10" fill="#6E473B" rx="0.5" />
-            {/* Flat tiered branch plates */}
-            <ellipse cx="0" cy="-4" rx="11" ry="3.5" fill="#34594B" />
-            <ellipse cx="-2" cy="-9" rx="8" ry="3" fill="#3F6B5A" />
-            <ellipse cx="1" cy="-14" rx="5" ry="2.5" fill="#4B806C" />
+            <rect x="-2.5" y="0" width="5" height="10" fill="#6E473B" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-11" y="-4" width="22" height="3" fill="#34594B" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-8" y="-8" width="16" height="3.5" fill="#3F6B5A" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-5" y="-12" width="10" height="3.5" fill="#4B806C" stroke="#2C2640" strokeWidth="1" />
+            {/* Stage 4: Blue Juniper Berries */}
+            {stage === 4 && (
+              <>
+                <rect x="-9" y="-2" width="1.5" height="1.5" fill="#2B4C7E" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="7" y="-2" width="1.5" height="1.5" fill="#2B4C7E" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="-4" y="-6.5" width="1.5" height="1.5" fill="#2B4C7E" stroke="#2C2640" strokeWidth="0.5" />
+              </>
+            )}
           </g>
         );
       case "oak": // diet (default)
       default:
         return (
           <g transform={`scale(${scale})`}>
-            {/* Trunk */}
-            <rect x="-3" y="0" width="6" height="16" fill="#654321" rx="1" />
-            {/* Thick leafy canopy */}
-            <circle cx="0" cy="-6" r="10" fill="#2A472E" />
-            <circle cx="-6" cy="-4" r="8" fill="#1F3622" />
-            <circle cx="6" cy="-5" r="8" fill="#365C3B" />
-            <circle cx="0" cy="-12" r="7.5" fill="#3E6843" opacity="0.9" />
+            <rect x="-3" y="0" width="6" height="16" fill="#654321" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-9" y="-12" width="18" height="9" fill="#2A472E" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-6" y="-18" width="12" height="6" fill="#365C3B" stroke="#2C2640" strokeWidth="1" />
+            <rect x="-3" y="-22" width="6" height="4" fill="#3E6843" stroke="#2C2640" strokeWidth="1" />
+            {/* Stage 4: Red/Clay Acorns */}
+            {stage === 4 && (
+              <>
+                <rect x="-5" y="-8" width="2" height="2" fill="#C67B5C" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="3" y="-9" width="2" height="2" fill="#C67B5C" stroke="#2C2640" strokeWidth="0.5" />
+                <rect x="-1" y="-15" width="2" height="2" fill="#C67B5C" stroke="#2C2640" strokeWidth="0.5" />
+              </>
+            )}
           </g>
         );
     }
@@ -107,7 +237,7 @@ export function LivingForest() {
       <g transform={`translate(${x}, ${y}) scale(0.6)`} className="cursor-pointer select-none">
         {/* Tail */}
         <path d="M-10,4 Q-14,0 -16,-6 Q-12,-8 -8,-4 Z" fill="#C67B5C" />
-        <path d="M-16,-6 Q-14,-9 -12,-8 Z" fill="#F5EBE6" /> {/* Tip */}
+        <path d="M-16,-6 Q-14,-9 -12,-8 Z" fill="#F5EBE6" />
         {/* Body */}
         <ellipse cx="-2" cy="1" rx="7" ry="5" fill="#C67B5C" />
         {/* Legs */}
@@ -132,7 +262,7 @@ export function LivingForest() {
   };
 
   return (
-    <Card className="border-border-custom bg-surface overflow-hidden shadow-md font-sans">
+    <Card className="gradient-glass-card overflow-hidden">
       <div className="p-5 flex flex-col gap-5">
         {/* Forest Stats Header */}
         <div className="flex items-center justify-between border-b border-border-custom/30 pb-4">
@@ -188,14 +318,13 @@ export function LivingForest() {
                 <path d="M25,48 L27,46 L29,48" stroke="#A3B899" strokeWidth="0.5" fill="none" opacity="0.7" />
                 <path d="M60,68 L62,66 L64,68" stroke="#A3B899" strokeWidth="0.5" fill="none" opacity="0.7" />
 
-                {/* Render Trees. We sort by Y position so that trees in the front (higher Y) draw on top of trees in the back (lower Y) */}
+                {/* Render Trees. Sorted by Y coordinates */}
                 {[...(trees || [])]
                   .sort((a, b) => a.positionY - b.positionY)
                   .map((tree) => {
-                    // Normalize position to fit SVG coordinates (0-100 x, 25-68 y for vertical depth placement)
-                    // The original coords in DB are 0-100. We map X directly, and scale Y to occupy the ground field (30-68)
                     const x = tree.positionX;
-                    const y = 25 + (tree.positionY * 0.43); // fits in 25 to 68 range
+                    const y = 25 + (tree.positionY * 0.43); 
+                    const stage = getGrowthStage(tree.plantedAt, tree.isMilestone, tree.id);
 
                     return (
                       <g
@@ -205,18 +334,67 @@ export function LivingForest() {
                         onMouseLeave={() => setHoveredTree(null)}
                         className="cursor-pointer transition-all duration-200 hover:filter hover:drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
                       >
-                        {renderTreeSVG(tree.treeSpecies, tree.isMilestone)}
+                        <AnimatePresence mode="wait">
+                          <motion.g
+                            key={`${tree.id}-${stage}`}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            {renderTreeSVG(tree.treeSpecies, tree.isMilestone, stage)}
+                          </motion.g>
+                        </AnimatePresence>
                       </g>
                     );
                   })}
 
                 {/* Render Wildlife Milestones */}
-                {/* For demo purposes, if they have at least 10 trees, or they have a tree with wildlifeUnlocked, show the fox */}
                 {trees?.some(t => t.wildlifeUnlocked === "fox") && (
-                  // Position fox in front of a tree or at a fixed meadow spot
                   renderFox(32, 58)
                 )}
               </svg>
+
+              {/* Pollen Particles & Falling Leaves Overlay (Dark Sky Layering style) */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-15">
+                {pollenParticles.map((p) => (
+                  <div
+                    key={`pollen-${p.id}`}
+                    className="absolute rounded-full bg-yellow-400/60 animate-pollen"
+                    style={{
+                      left: `${p.left}%`,
+                      top: `${p.top}%`,
+                      width: `${p.size}px`,
+                      height: `${p.size}px`,
+                      filter: "blur(0.5px)",
+                      "--op": p.opacity,
+                      "--dur": `${p.duration}s`,
+                      "--delay": `${p.delay}s`,
+                    } as React.CSSProperties}
+                  />
+                ))}
+
+                {leafParticles.map((l) => (
+                  <svg
+                    key={`leaf-${l.id}`}
+                    className="absolute animate-leaf-fall text-current"
+                    style={{
+                      left: `${l.left}%`,
+                      top: "-5%",
+                      width: `${l.size}px`,
+                      height: `${l.size}px`,
+                      "--op": l.opacity,
+                      "--dur": `${l.duration}s`,
+                      "--delay": `${l.delay}s`,
+                      color: l.color,
+                    } as React.CSSProperties}
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M17 3H21V7C21 14 14 21 7 21H3V17C3 10 10 3 17 3Z" />
+                  </svg>
+                ))}
+              </div>
             </>
           )}
 

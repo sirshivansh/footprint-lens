@@ -10,19 +10,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   isLoading?: boolean;
 }
 
-const MotionButton = motion.button as any;
-
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-sans font-semibold rounded-custom-btn transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay disabled:pointer-events-none disabled:opacity-50";
+      "inline-flex items-center justify-center font-sans font-extrabold rounded-custom-btn transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay disabled:pointer-events-none disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0 disabled:shadow-none";
 
     const variants = {
-      primary: "bg-soil text-sand hover:bg-soil/95 active:bg-soil/90 dark:bg-soil dark:text-sand dark:hover:bg-soil/90",
-      accent: "bg-moss text-sand hover:bg-moss/95 active:bg-moss/90 dark:bg-moss dark:text-sand dark:hover:bg-moss/90",
-      secondary: "bg-clay text-sand hover:bg-clay/95 active:bg-clay/90 dark:bg-clay dark:text-sand dark:hover:bg-clay/90",
-      outline: "border border-border-custom bg-transparent text-soil hover:bg-soil/5 dark:text-soil dark:hover:bg-soil/5",
-      ghost: "bg-transparent text-soil hover:bg-soil/5 dark:text-soil dark:hover:bg-soil/5",
+      primary: "bg-soil text-sand border-[3px] border-soil shadow-[3px_3px_0px_0px_rgba(44,38,64,0.4)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_rgba(44,38,64,0.4)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]",
+      accent: "bg-moss text-soil border-[3px] border-soil shadow-[3px_3px_0px_0px_var(--soil)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_var(--soil)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
+      secondary: "bg-clay text-sand border-[3px] border-soil shadow-[3px_3px_0px_0px_var(--soil)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_var(--soil)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
+      outline: "border-[3px] border-soil bg-transparent text-soil shadow-[3px_3px_0px_0px_var(--soil)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_var(--soil)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none hover:bg-soil/5",
+      ghost: "bg-transparent text-soil border-[3px] border-transparent hover:bg-soil/5 active:translate-x-[1px] active:translate-y-[1px]",
     };
 
     const sizes = {
@@ -32,10 +30,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     return (
-      <MotionButton
+      <button
         ref={ref}
-        whileTap={{ scale: disabled || isLoading ? 1 : 0.97 }}
-        transition={{ type: "spring", stiffness: 400, damping: 15 }}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={disabled || isLoading}
         {...props}
@@ -63,7 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         ) : null}
         {children}
-      </MotionButton>
+      </button>
     );
   }
 );
